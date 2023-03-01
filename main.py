@@ -1,4 +1,8 @@
 from connector import Connector
-from config.py import API_KEY
+from config import API_KEY
 
-connector = Connector(API_KEY)
+year = 2019
+varlist = ["NAME", "B02015_009E","B02015_009M"]
+connector = Connector(api_key = API_KEY, varlist = varlist, year = year)
+response = connector.data
+print(response.status_code)
