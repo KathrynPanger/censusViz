@@ -1,1 +1,9 @@
 config.py
+/mapImages/*
+/makeMaps/*
+/makeMaps/
+/mapImages/
+/documentation/largeFiles
+*.png
+*.zip
+*scratch*
