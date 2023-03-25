@@ -1,0 +1,40 @@
+2019 ACS Variable List:
+https://downloads.esri.com/esri_content_doc/dbl/us/Var_List_ACS_Winter_2021.pdf
+
+Original 1987 Study by The United Church of Christ Commission on Racial Justice (UCC) :
+https://www.nrc.gov/docs/ML1310/ML13109A339.pdf
+
+Since the study was publihsed, the EPA cares about environmental justice. They
+award grants and the like. Here is the webpage
+https://www.epa.gov/environmentaljustice
+
+The National Environmental Policy Act is also a thing. Still in the process of learning about it. Documented here:
+https://www.epa.gov/nepa
+
+A timeline of events leading up to the environmental justice movement and the EPAs involvement in it:
+https://www.epa.gov/environmentaljustice/environmental-justice-timeline
+
+Before the church of christ study, this study came out examining the four hazardous-waste
+landfills, which is cited in the church of Christ study.
+Their methods were as follows:
+"To obtain information on communities surrounding these
+landfills, Bureau of the Census, Department of Commerce,
+officials located the sites on maps that delineated census
+areas and provided 1980 racial and economic data for census areas
+in which the landfills are located and other census areas that
+have borders within about 4 miles. Bureau of the Census
+officials also provided similar data for the county and State
+where the landfills are located."
+
+Findings:
+"Based on 1980 census data at three of the four sites--
+Chemical Waste Management, Industrial Chemical Company, and the
+Warren County PCB Landfill-- the majority of the population in
+census areas (areas within a county such as a township or sub-
+division) where the landfills are located is Black. Also, at all
+four sites the Black population in the surrounding census areas
+has a lower mean income than the mean income for all races com-
+bined and represents the majority of those below poverty level
+(the poverty level was $7,412 for a family of four in the 1980
+census)."
+link: http://archive.gao.gov/d48t13/121648.pdf
