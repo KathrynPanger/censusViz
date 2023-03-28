@@ -1,7 +1,8 @@
 from __future__ import annotations
 import cenpy
+from shapely import wkt
 
-class Census():
+class Tracts():
     def __init__(self, varDict: dict[str, str], city:str, state:str):
         self.varDict = varDict
         self.city = city
@@ -16,6 +17,11 @@ class Census():
         df = df.to_crs("EPSG:4326")
         self.df = df
 
+    def get_proportions(self, portions: dict[str:str], total: str):
+        df = self.df
+        for portion in portions.items():
+            df[portion[1]] = df[portion[0]] / df[total]
+        self.df = df
 
 if __name__ == "__main__":
     # test init
@@ -38,5 +44,8 @@ if __name__ == "__main__":
                }
     city = "Chicago"
     state = "IL"
-    censusDf = Census(varDict, city, state)
+    censusDf = Tracts(varDict, city, state)
+
+
+
     print(censusDf.df.head())

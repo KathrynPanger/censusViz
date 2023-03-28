@@ -15,7 +15,7 @@ class Facilities():
         self.units = units
 
         # convert to geopandas, lat-long geometry
-        df = pd.read_csv("../../../data/raw/epa_tri_toxic_waste_2019.csv")
+        df = pd.read_csv("../../data/raw/epa_tri_toxic_waste_2019.csv")
         df = gpd.GeoDataFrame(df, geometry=gpd.points_from_xy(df["13. LONGITUDE"],
                                                               df["12. LATITUDE"])).set_crs("EPSG:4326")
 
