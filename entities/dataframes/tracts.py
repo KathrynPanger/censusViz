@@ -17,11 +17,12 @@ class Tracts():
         df = df.to_crs("EPSG:4326")
         self.df = df
 
-    def get_proportions(self, portions: dict[str:str], total: str):
+    def get_proportions(self, portions: list[str], total: str):
         df = self.df
-        for portion in portions.items():
-            df[portion[1]] = df[portion[0]] / df[total]
+        for portion in portions:
+            df[f"proportion_{portion}"] = df[portion] / df[total]
         self.df = df
+
 
 if __name__ == "__main__":
     # test init
@@ -44,8 +45,14 @@ if __name__ == "__main__":
                }
     city = "Chicago"
     state = "IL"
-    censusDf = Tracts(varDict, city, state)
+    tracts = Tracts(varDict, city, state)
+
+    #get proportions
+    portions = ["white_alone", "white_some", "black_alone", "black_some"]
+    total = "total_population"
+
+    tracts.get_proportions(portions, total)
 
 
 
-    print(censusDf.df.head())
+    print(tracts.df.head())
