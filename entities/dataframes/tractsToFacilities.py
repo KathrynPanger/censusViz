@@ -3,12 +3,14 @@ from tracts import Tracts
 from facilities import Facilities, units
 import pandas as pd
 import geopandas as gpd
+from shapely import wkt
 
 
 class TractsToFacilities():
     def __init__(self, tracts, facilities):
         self.tracts = tracts
         self.facilities = facilities
+        # self.tracts.df['geometry'] = self.tracts.df['geometry'].apply(wkt.loads)
         assert self.tracts.city.lower() == self.facilities.city.lower()
         self.city = self.tracts.city
         self.state = self.tracts.state
@@ -28,19 +30,27 @@ class TractsToFacilities():
         # drop duplicates for every tract which is equidistant from more than one facility (default creates more rows)
         df = df.drop_duplicates(subset="GEOID", keep="first")
         df = df[["GEOID", "meters_to_nearest_facility"]]
-        if not self.df:
+        if self.df is None:
+            self.df = self.tracts.df.merge(df, on = "GEOID")
+        else:
+            self.df = self.df.merge(df, on = "GEOID")
+
+    def get_facilities_in_tract(self):
+        df = gpd.sjoin(self.facilities.df, self.tracts.df, how="left", op='intersects')
+        # Add a field with 1 as a constant value
+        df['number_of_facilities_in_tract'] = 1
+        # Group data
+
+        df = df.groupby('GEOID').agg({'number_of_facilities_in_tract': 'sum'}).reset_index()
+        df["number_of_facilities_in_tract"] = df['number_of_facilities_in_tract'].astype("int64")
+        df = df[["GEOID", "number_of_facilities_in_tract"]]
+        df = self.tracts.df.merge(df, on="GEOID", how="left").fillna(value=0)
+
+        if self.df is None:
             self.df = df
         else:
-            self.df = self.df.join(df, on = "GEOID")
-
-    def get_facilities_count_in_tract(self):
-        # facilities_in_tract = gpd.sjoin(self.facilities.df, self.tracts.df, how="left", op='intersects')
-        # # Add a field with 1 as a constant value
-        # facilities_in_tract['number_of_facilities_in_tract'] = 1
-        # # Group data
-        # facilities_in_tract = facilities_in_tract.groupby('GEOID').agg({'number_of_facilities_in_tract': 'sum'}).reset_index()
-        #tractsto_facilities = self.tracts.df.merge(facilities_in_tract, on="GEOID", how="left").fillna(value=0)
-        pass
+            df = df[["GEOID", "number_of_facilities_in_tract"]]
+            self.df = self.df.merge(df, on = "GEOID")
 
 
 
@@ -71,14 +81,17 @@ if __name__ == "__main__":
         "geometry": "geometry",
     }
     city = "Chicago"
+
     facilities = Facilities(varDict, city, units=units.GRAMS)
-    print(facilities.df.head())
-    print(facilities.df["units"].unique())
 
     # combine
     tractsToFacilities = TractsToFacilities(tracts, facilities)
-    tractsToFacilities.get_meters_to_nearest_facility()
 
-    # print
-    print(tractsToFacilities.df.head())
+    #test functions
+    tractsToFacilities.get_meters_to_nearest_facility()
+    tractsToFacilities.get_facilities_in_tract()
+
+
+    # print data
+    print(tractsToFacilities.df)
 
