@@ -3,19 +3,21 @@ import pandas as pd
 import geopandas as gpd
 import enum
 
-class units(enum.Enum):
+class Units(enum.Enum):
     GRAMS = "Grams"
     POUNDS = "Pounds"
     MIXED = "Mixed"
 
 class Facilities():
-    def __init__(self, varDict: dict[str, str], city:str, units = units.GRAMS):
+
+    """Dataframe containing the location and properties of all toxic waste facilities in the city specified"""
+    def __init__(self, varDict: dict[str, str], city:str, units = Units.GRAMS):
         self.varDict = varDict
         self.city = city.upper()
         self.units = units
 
         # convert to geopandas, lat-long geometry
-        df = pd.read_csv("../../data/raw/epa_tri_toxic_waste_2019.csv")
+        df = pd.read_csv("../data/raw/epa_tri_toxic_waste_2019.csv")
         df = gpd.GeoDataFrame(df, geometry=gpd.points_from_xy(df["13. LONGITUDE"],
                                                               df["12. LATITUDE"])).set_crs("EPSG:4326")
 
@@ -40,6 +42,9 @@ class Facilities():
         # save final df
         self.df = df
 
+    @property
+    def unit(self):
+        return self.units
 
 if __name__ == "__main__":
     varDict = {
@@ -54,7 +59,7 @@ if __name__ == "__main__":
         "geometry": "geometry",
                }
     city = "Chicago"
-    facilities = Facilities(varDict, city, units = units.GRAMS)
+    facilities = Facilities(varDict, city, units = Units.GRAMS)
     print(facilities.df.head())
     print(facilities.df["units"].unique())
 

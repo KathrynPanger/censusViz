@@ -1,6 +1,4 @@
 from __future__ import annotations
-from tracts import Tracts
-from facilities import Facilities, units
 import pandas as pd
 import geopandas as gpd
 from shapely import wkt
@@ -52,9 +50,38 @@ class TractsToFacilities():
             df = df[["GEOID", "number_of_facilities_in_tract"]]
             self.df = self.df.merge(df, on = "GEOID")
 
+    def get_exposure_vars(self):
+        points_data = self.facilities.df
+        polygon_data = self.tracts.df
+        points = points_data["geometry"].tolist()
+        outputs = points_data[self.facilities.varDict["62. ON-SITE RELEASE TOTAL"]].tolist()
+        polygon_data["total_exposure"] = 0
+        polygon_data["sum_of_distances"] = 0
+        for i in range(len(points_data)):
+            distances_to_one_point = polygon_data["geometry"].distance(points[i])
+            exposure_to_one_point = distances_to_one_point.apply(
+                lambda x: ((1 / x ** 2) * outputs[i]) if x != 0 else outputs[i])
+            polygon_data["sum_of_distances"] += distances_to_one_point
+            polygon_data["total_exposure"] += exposure_to_one_point
+        df = polygon_data[["GEOID", "sum_of_distances", "total_exposure"]]
+
+        if self.df is None:
+            self.df = df
+        else:
+            self.df = self.df.merge(df, on="GEOID")
+
+    def normalize(self, variables: list[str]):
+        df = self.df
+        for variable in variables:
+            mean = df[variable].mean()
+            std = df[variable].std()
+            df[f"{variable}_normalized"] = (df[variable] - mean) / std
+        self.df = df
 
 
 if __name__ == "__main__":
+    from tracts import Tracts
+    from facilities import Facilities, Units
     # get tracts
     varDict = {"B02001_002E": "white_alone",
                "B02008_001E": "white_some",
@@ -68,7 +95,12 @@ if __name__ == "__main__":
     state = "IL"
     tracts = Tracts(varDict, city, state)
 
-        # get facilities
+    # get proportions on tracts
+    portions = ["white_alone", "white_some", "black_alone", "black_some"]
+    total = "total_population"
+    tracts.get_proportions(portions, total)
+
+   # get facilities
     varDict = {
         "2. TRIFD": "trifd",
         "4. FACILITY NAME": "facility",
@@ -82,16 +114,27 @@ if __name__ == "__main__":
     }
     city = "Chicago"
 
-    facilities = Facilities(varDict, city, units=units.GRAMS)
+    facilities = Facilities(varDict, city, units=Units.GRAMS)
 
     # combine
     tractsToFacilities = TractsToFacilities(tracts, facilities)
 
-    #test functions
+    # get derived vars
     tractsToFacilities.get_meters_to_nearest_facility()
     tractsToFacilities.get_facilities_in_tract()
+    tractsToFacilities.get_exposure_vars()
+
+    # normalize
+    normalList = ["proportion_white_alone",
+                  "proportion_white_some",
+                  "proportion_black_alone",
+                  "proportion_black_some",
+                  "meters_to_nearest_facility",
+                  "number_of_facilities_in_tract",
+                  "total_exposure"]
+    tractsToFacilities.normalize(normalList)
 
 
-    # print data
-    print(tractsToFacilities.df)
+    # write data to outfile
+    tractsToFacilities.df.to_csv("../data/city/chicago/chicago.csv")
 
