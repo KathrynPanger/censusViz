@@ -129,10 +129,12 @@ if __name__ == "__main__":
                   "proportion_white_some",
                   "proportion_black_alone",
                   "proportion_black_some",
+                  "median_household_income",
                   "meters_to_nearest_facility",
                   "number_of_facilities_in_tract",
                   "total_exposure"]
     tractsToFacilities.normalize(normalList)
+
 
 
     # write data to outfile
